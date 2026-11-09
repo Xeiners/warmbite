@@ -33,7 +33,7 @@ export function initCarousel(root: HTMLElement, reduced: boolean) {
   let spacing = 0;
   let lift = 0;
   let inView = false;
-  let elapsed = 0;
+  let progress: Animation | null = null;
   let moving = false;
   let dragging = false;
   let dragOrigin = 0;
@@ -66,8 +66,35 @@ export function initCarousel(root: HTMLElement, reduced: boolean) {
     }
   };
 
-  const setFill = (index: number, value: number) => {
-    gsap.set(fills[index], { scaleX: Math.min(1, value) });
+  const syncProgress = () => {
+    if (!progress) return;
+    const shouldRun = running && inView && !moving && !dragging && !document.hidden;
+    if (shouldRun && progress.playState === 'paused') progress.play();
+    if (!shouldRun && progress.playState === 'running') progress.pause();
+  };
+
+  // Animation native : la barre avance sur la carte graphique, sans JavaScript à chaque image.
+  const startProgress = () => {
+    progress?.cancel();
+    const video = videos[active];
+    const seconds = video && video.duration > 0 ? video.duration : STILL_SECONDS;
+    progress = fills[active].animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], {
+      duration: seconds * 1000,
+      easing: 'linear',
+      fill: 'both',
+    });
+    progress.onfinish = () => {
+      // Une vidéo en cours de lecture passe à la suivante sur son événement « ended ».
+      const current = videos[active];
+      const videoPlaying = current && !current.paused && current.readyState >= 2;
+      if (!moving && !dragging && !videoPlaying) moveBy(1);
+    };
+    syncProgress();
+  };
+
+  const syncPlayback = () => {
+    syncVideos();
+    syncProgress();
   };
 
   const setCaption = (index: number, immediate = false) => {
@@ -84,9 +111,7 @@ export function initCarousel(root: HTMLElement, reduced: boolean) {
   };
 
   const setActive = (index: number) => {
-    setFill(active, 0);
     active = index;
-    elapsed = 0;
 
     const video = videos[active];
     if (video) video.currentTime = 0;
@@ -104,6 +129,7 @@ export function initCarousel(root: HTMLElement, reduced: boolean) {
       gsap.fromTo(arches, { scale: 0.975 }, { scale: 1, duration: 1.3, ease: 'elastic.out(1, 0.55)', overwrite: true });
     }
     syncVideos();
+    startProgress();
   };
 
   const render = () => {
@@ -129,6 +155,7 @@ export function initCarousel(root: HTMLElement, reduced: boolean) {
   const animateTo = (destination: number, ease: string, duration: number) => {
     target = destination;
     moving = true;
+    syncProgress();
     gsap.to(state, {
       position: destination,
       duration: reduced ? 0.01 : duration,
@@ -137,41 +164,35 @@ export function initCarousel(root: HTMLElement, reduced: boolean) {
       onUpdate: render,
       onComplete() {
         moving = false;
+        syncProgress();
       },
     });
   };
 
   // Un clic pendant un mouvement repart sans à-coup.
-  const moveBy = (steps: number) => animateTo(target + steps, moving ? 'power3.out' : 'expo.inOut', 0.95);
+  function moveBy(steps: number) {
+    animateTo(target + steps, moving ? 'power3.out' : 'expo.inOut', 0.95);
+  }
 
   const setRunning = (value: boolean) => {
     running = value;
     toggle.toggleAttribute('data-paused', !value);
     toggle.setAttribute('aria-label', value ? labelPause : labelPlay);
     live.setAttribute('aria-live', value ? 'off' : 'polite');
-    syncVideos();
+    syncPlayback();
   };
 
-  // Progression : temps réel de la vidéo, sinon minuterie pour les visuels fixes.
-  gsap.ticker.add((_, deltaMs) => {
-    if (!running || !inView || moving || dragging || document.hidden) return;
-    const video = videos[active];
-    let progress: number;
-
-    if (video && video.readyState >= 2 && video.duration > 0 && !video.paused) {
-      progress = video.currentTime / video.duration;
-    } else {
-      elapsed += deltaMs / 1000;
-      progress = elapsed / STILL_SECONDS;
-    }
-
-    setFill(active, progress);
-    if (progress >= 0.995) moveBy(1);
-  });
-
   videos.forEach((video, i) => {
-    video?.addEventListener('ended', () => {
+    if (!video) return;
+    video.addEventListener('ended', () => {
       if (i === active && running && !dragging && !moving) moveBy(1);
+    });
+    // La durée réelle n'est connue qu'une fois la vidéo chargée.
+    video.addEventListener('loadedmetadata', () => {
+      if (i === active) startProgress();
+    });
+    video.addEventListener('playing', () => {
+      if (i === active && progress) progress.currentTime = video.currentTime * 1000;
     });
   });
 
@@ -206,6 +227,7 @@ export function initCarousel(root: HTMLElement, reduced: boolean) {
       dragging = true;
       dragOrigin = state.position;
       travelled = 0;
+      syncProgress();
     },
     onMove(deltaX) {
       travelled = Math.max(travelled, Math.abs(deltaX));
@@ -228,12 +250,12 @@ export function initCarousel(root: HTMLElement, reduced: boolean) {
         warm(active + 1);
         warm(active - 1);
       }
-      syncVideos();
+      syncPlayback();
     },
     { threshold: 0.2 },
   ).observe(stage);
 
-  document.addEventListener('visibilitychange', syncVideos);
+  document.addEventListener('visibilitychange', syncPlayback);
 
   const measure = () => {
     const frame = slides[0].offsetWidth;
@@ -252,5 +274,6 @@ export function initCarousel(root: HTMLElement, reduced: boolean) {
   measure();
   render();
   setCaption(0, true);
+  startProgress();
   setRunning(running);
 }

@@ -26,6 +26,8 @@ const { body, shine } = buildDripPaths(WIDTH, band, drips, drips.map((d) => d.le
     position: absolute;
     inset-inline: 0;
     pointer-events: none;
+    transform-origin: top;
+    will-change: transform;
   }
 
   svg {

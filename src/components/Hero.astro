@@ -2,8 +2,10 @@
 import Branch from './Branch.astro';
 import Drip from './Drip.astro';
 import Heart from './Heart.astro';
+import PastryArt from './PastryArt.astro';
 import { site } from '../data/site';
 import { ui, type Lang } from '../i18n/ui';
+import type { PastryKind } from '../lib/pastry';
 
 interface Props {
   lang: Lang;
@@ -11,6 +13,7 @@ interface Props {
 
 const t = ui[Astro.props.lang].hero;
 const lines = ['warm', 'bite'];
+const treats: PastryKind[] = ['donut', 'tiramisu', 'beignet', 'cake'];
 ---
 
 <section class="hero" id="top" data-hero>
@@ -40,6 +43,11 @@ const lines = ['warm', 'bite'];
           </svg>
           <Heart class="whisk__heart" />
         </span>
+        {treats.map((kind, index) => (
+          <span class:list={['treat', `treat--${index + 1}`]} data-treat>
+            <span class="treat__float"><PastryArt kind={kind} idPrefix="hero" /></span>
+          </span>
+        ))}
         {lines.map((word) => (
           <span class="wordmark__line">
             {[...word].map((letter) => <span class="ch" data-ch>{letter}</span>)}
@@ -112,6 +120,7 @@ const lines = ['warm', 'bite'];
   .hero__inner {
     position: relative;
     z-index: 2;
+    will-change: transform;
     display: flex;
     max-width: 100%;
     flex-direction: column;
@@ -162,6 +171,127 @@ const lines = ['warm', 'bite'];
     right: -2%;
     bottom: 26%;
     width: 26%;
+  }
+
+  /* Par défaut, deux pâtisseries de part et d'autre du fouet. */
+  .treat {
+    position: absolute;
+    bottom: calc(100% + 0.04em);
+    display: block;
+    width: 0.56em;
+    line-height: 0;
+  }
+
+  .treat :global(.pastry) {
+    width: 100%;
+  }
+
+  .treat--1 {
+    --tilt: -14deg;
+    --float: 5.2s;
+    --delay: 0s;
+    left: calc(50% - 1.34em);
+  }
+
+  .treat--2 {
+    --tilt: 9deg;
+    --float: 6.4s;
+    --delay: -2.1s;
+    left: calc(50% + 0.78em);
+  }
+
+  .treat--3 {
+    --tilt: 11deg;
+    --float: 5.8s;
+    --delay: -3.6s;
+    display: none;
+  }
+
+  .treat--4 {
+    --tilt: -8deg;
+    --float: 7s;
+    --delay: -1.2s;
+    display: none;
+  }
+
+  .treat__float {
+    display: block;
+    transform: rotate(var(--tilt));
+    will-change: transform;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .treat__float {
+      animation: treat-float var(--float) var(--delay) ease-in-out infinite alternate;
+    }
+  }
+
+  /* En em et non en % : une transformation en % ne peut pas tourner sur la carte graphique. */
+  @keyframes treat-float {
+    to {
+      transform: translateY(-0.06em) rotate(calc(var(--tilt) + 6deg));
+    }
+  }
+
+  /* Petit téléphone : resserrées autour du fouet, à l'écart des longues coulures. */
+  @media (max-width: 720px) and (max-height: 700px) {
+    .treat {
+      width: 0.42em;
+    }
+
+    .treat--1 {
+      left: calc(50% - 0.93em);
+    }
+
+    .treat--2 {
+      left: calc(50% + 0.51em);
+    }
+  }
+
+  /* Écran moyen en paysage : dans les coins bas, sous la courbe de la couronne. */
+  @media (min-width: 721px) and (min-aspect-ratio: 11/10) {
+    .treat {
+      top: 2.25em;
+      bottom: auto;
+    }
+
+    .treat--1 {
+      left: max(calc(50% - 50vw + 8px), calc(50% - 2.85em));
+    }
+
+    .treat--2 {
+      left: min(calc(50% + 50vw - 8px - 0.56em), calc(50% + 2.29em));
+    }
+  }
+
+  /* Écran large : quatre pâtisseries à l'extérieur de la couronne. */
+  @media (min-width: 1100px) and (min-aspect-ratio: 3/2) {
+    .treat {
+      bottom: auto;
+      width: 0.66em;
+    }
+
+    .treat--1 {
+      top: 0.55em;
+      left: calc(50% - 3.25em);
+    }
+
+    .treat--2 {
+      top: 0.68em;
+      left: calc(50% + 2.62em);
+    }
+
+    .treat--3 {
+      top: 1.72em;
+      left: calc(50% - 3.02em);
+      display: block;
+    }
+
+    .treat--4 {
+      top: 1.6em;
+      left: calc(50% + 2.4em);
+      display: block;
+    }
   }
 
   .wordmark__heart {

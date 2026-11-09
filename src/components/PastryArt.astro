@@ -3,11 +3,13 @@ import { donutSprinkles, wavyCircle, wavyLayer, type PastryKind } from '../lib/p
 
 interface Props {
   kind: PastryKind;
+  /** Évite les identifiants SVG en double quand une illustration apparaît deux fois. */
+  idPrefix?: string;
 }
 
-const { kind } = Astro.props;
+const { kind, idPrefix = 'slide' } = Astro.props;
 const sprinkles = donutSprinkles(160, 180);
-const clipId = `cup-${kind}`;
+const clipId = `${idPrefix}-cup`;
 ---
 
 <svg class="pastry" viewBox="0 0 320 340" role="presentation" aria-hidden="true" focusable="false">
