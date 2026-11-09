@@ -1,0 +1,27 @@
+# Dépendances
+node_modules/
+
+# Build
+dist/
+.astro/
+
+# Vercel
+.vercel/
+
+# Variables d'environnement
+.env
+.env.*
+!.env.example
+
+# Vidéos sources : seules les versions encodées de public/videos/ sont versionnées
+media-src/*
+!media-src/.gitkeep
+
+# Journaux
+*.log
+
+# Système et éditeurs
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

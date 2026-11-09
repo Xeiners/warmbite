@@ -1,0 +1,224 @@
+:root {
+  /* Échantillonné sur le logo et le visuel « Tarifs » */
+  --ganache: #3e1c10;
+  --ganache-light: #6b3d2b;
+  --cocoa: #4f2617;
+  --cocoa-soft: #6a4232;
+  --heart: #f49092;
+  --cherry: #b3202b;
+  --rose: #ffd3dc;
+  --blush: #fbe9ea;
+  --petal: #fdf4f5;
+  --leaf: #fff3f2;
+  --on-ganache-muted: #f6c9d0;
+
+  --font-display: 'Caprasimo', Georgia, 'Times New Roman', serif;
+  --font-accent: 'Fraunces', Georgia, serif;
+  --font-body: 'Instrument Sans Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --gutter: clamp(20px, 4vw, 56px);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  background: var(--ganache);
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+body {
+  margin: 0;
+  overflow-x: clip;
+  background: var(--blush);
+  color: var(--cocoa);
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+}
+
+:focus-visible {
+  outline: 3px solid var(--heart);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 100;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--petal);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+.container {
+  width: min(100% - var(--gutter) * 2, 1180px);
+  margin-inline: auto;
+}
+
+.eyebrow {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.section-title {
+  font-size: clamp(2.75rem, 1.6rem + 5.4vw, 6rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.btn {
+  --btn-bg: var(--cocoa);
+  --btn-fg: var(--petal);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  min-height: 54px;
+  padding: 0 28px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-weight: 600;
+  white-space: nowrap;
+  isolation: isolate;
+  transition: color 0.35s var(--ease-out), transform 0.35s var(--ease-out);
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--heart);
+  transform: translateY(101%);
+  transition: transform 0.45s var(--ease-out);
+}
+
+.btn--ghost {
+  --btn-bg: transparent;
+  --btn-fg: var(--cocoa);
+  box-shadow: inset 0 0 0 1.5px currentColor;
+}
+
+.btn--rose {
+  --btn-bg: var(--rose);
+  --btn-fg: var(--ganache);
+}
+
+.btn--ghost-light {
+  --btn-bg: transparent;
+  --btn-fg: var(--petal);
+  box-shadow: inset 0 0 0 1.5px currentColor;
+}
+
+@media (hover: hover) {
+  .btn:hover {
+    color: var(--ganache);
+  }
+
+  .btn:hover::before {
+    transform: none;
+  }
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+/* Évite le flash du hero avant le lancement de l'intro GSAP. */
+@media (prefers-reduced-motion: no-preference) {
+  .js:not(.is-ready) [data-intro] {
+    visibility: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

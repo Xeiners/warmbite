@@ -1,0 +1,54 @@
+---
+import { buildDripPaths, dripGeometry, type DripBand } from '../lib/drip';
+
+interface Props {
+  band: DripBand;
+  mirror?: boolean;
+  class?: string;
+}
+
+const { band: mode, mirror = false, class: className } = Astro.props;
+const WIDTH = 1440;
+const { band, height, drips } = dripGeometry(WIDTH, mode, mirror);
+const { body, shine } = buildDripPaths(WIDTH, band, drips, drips.map((d) => d.len));
+---
+
+<div class:list={['drip', className]} data-drip={mode} data-mirror={mirror ? '' : undefined} aria-hidden="true">
+  <svg viewBox={`0 0 ${WIDTH} ${height}`} preserveAspectRatio="xMidYMin slice" focusable="false">
+    <path class="drip__rim" data-rim d={body}></path>
+    <path class="drip__body" data-body d={body}></path>
+    <path class="drip__shine" data-shine d={shine}></path>
+  </svg>
+</div>
+
+<style>
+  .drip {
+    position: absolute;
+    inset-inline: 0;
+    pointer-events: none;
+  }
+
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .drip__rim {
+    fill: var(--ganache-light);
+    transform: translateY(3px);
+  }
+
+  .drip__body {
+    fill: var(--ganache);
+  }
+
+  .drip__shine {
+    fill: none;
+    stroke: var(--blush);
+    stroke-opacity: 0.42;
+    stroke-width: 3.5;
+    stroke-linecap: round;
+  }
+</style>

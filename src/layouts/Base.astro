@@ -1,0 +1,80 @@
+---
+import '@fontsource/caprasimo/latin-400.css';
+import '@fontsource/fraunces/latin-400-italic.css';
+import '@fontsource-variable/instrument-sans/wght.css';
+import '../styles/global.css';
+import displayFont from '@fontsource/caprasimo/files/caprasimo-latin-400-normal.woff2?url';
+import { site } from '../data/site';
+import { languages, ui, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+const title = `${site.name} · ${t.meta.title}`;
+const description = t.meta.description;
+const origin = Astro.site?.origin;
+const canonical = origin ? new URL(Astro.url.pathname, origin).href : undefined;
+const ogImage = origin ? new URL('/og.jpg', origin).href : undefined;
+const alternates = Object.entries(languages);
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'Bakery',
+  name: site.name,
+  slogan: site.tagline,
+  description,
+  telephone: '+21655321754',
+  priceRange: '3.5–29 TND',
+  sameAs: [site.tiktokUrl],
+  ...(origin ? { url: origin, image: ogImage } : {}),
+};
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#3e1c10" />
+    {canonical && <link rel="canonical" href={canonical} />}
+    {origin && alternates.map(([code, item]) => (
+      <link rel="alternate" hreflang={code} href={new URL(item.href, origin).href} />
+    ))}
+    {origin && <link rel="alternate" hreflang="x-default" href={new URL(languages.fr.href, origin).href} />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={languages[lang].locale} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    {ogImage && <meta name="twitter:card" content="summary_large_image" />}
+
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
+
+    <script is:inline>
+      (function (root) {
+        root.classList.add('js');
+        // Si le script principal ne se lance pas, le contenu reste visible.
+        setTimeout(function () {
+          if (!root.classList.contains('is-ready')) root.classList.remove('js');
+        }, 4000);
+      })(document.documentElement);
+    </script>
+
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenu">{t.skip}</a>
+    <slot />
+  </body>
+</html>

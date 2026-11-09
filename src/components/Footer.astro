@@ -1,0 +1,97 @@
+---
+import { site } from '../data/site';
+import { ui, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const t = ui[Astro.props.lang].footer;
+const year = new Date().getFullYear();
+const { name: developer, email } = site.developer;
+---
+
+<footer class="footer">
+  <div class="container footer__row">
+    <p class="footer__tagline">{site.tagline}</p>
+    <p>
+      <a href={site.tiktokUrl} target="_blank" rel="noopener">{site.tiktokHandle}</a>
+      <span class="footer__sep" aria-hidden="true">·</span>
+      © {year} {site.name}
+    </p>
+  </div>
+  <p class="container footer__credit">
+    <a class="footer__by" href={`mailto:${email}`} title={email}>{t.credit} <strong>{developer}</strong></a>
+  </p>
+</footer>
+
+<style>
+  .footer {
+    position: relative;
+    z-index: 2;
+    padding-block: 22px 26px;
+    background: var(--ganache);
+    color: var(--on-ganache-muted);
+    font-size: 0.9375rem;
+  }
+
+  .footer__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px 24px;
+    padding-top: 18px;
+    border-top: 1px solid rgb(246 201 208 / 0.22);
+  }
+
+  .footer__tagline {
+    font-family: var(--font-accent);
+    font-size: 1.125rem;
+    font-style: italic;
+  }
+
+  .footer__credit {
+    margin-top: clamp(26px, 3.4vw, 44px);
+    text-align: center;
+  }
+
+  .footer__by {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: clamp(1.625rem, 1.2rem + 1.8vw, 2.75rem);
+    line-height: 1.15;
+    color: var(--petal);
+    text-decoration: none;
+  }
+
+  .footer__by strong {
+    font-weight: 400;
+    color: var(--heart);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.14em;
+  }
+
+  @media (hover: hover) {
+    .footer__by:hover strong {
+      text-decoration-line: underline;
+    }
+  }
+
+  .footer__sep {
+    margin-inline: 0.35em;
+  }
+
+  a {
+    padding-block: 8px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  @media (max-width: 520px) {
+    .footer__row {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+</style>

@@ -1,0 +1,45 @@
+---
+interface Props {
+  rings?: number;
+  gap?: number;
+  inner?: number;
+  class?: string;
+}
+
+const { rings = 5, gap = 26, inner = 150, class: className } = Astro.props;
+const outer = inner + gap * (rings - 1);
+const size = outer * 2 + 8;
+const cx = size / 2;
+const legs = outer * 1.5;
+const top = outer + 4;
+const bottom = top + legs;
+
+const paths = Array.from({ length: rings }, (_, i) => {
+  const r = inner + gap * i;
+  return `M${cx - r} ${bottom}V${top}A${r} ${r} 0 0 1 ${cx + r} ${top}V${bottom}`;
+});
+---
+
+<svg
+  class:list={['arches', className]}
+  data-arches
+  viewBox={`0 0 ${size} ${bottom}`}
+  aria-hidden="true"
+  focusable="false"
+>
+  {paths.map((d) => <path data-ring pathLength="1" d={d}></path>)}
+</svg>
+
+<style>
+  .arches {
+    display: block;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 3;
+  }
+</style>

@@ -1,0 +1,251 @@
+---
+import Branch from './Branch.astro';
+import Drip from './Drip.astro';
+import Heart from './Heart.astro';
+import { site } from '../data/site';
+import { ui, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const t = ui[Astro.props.lang].hero;
+const lines = ['warm', 'bite'];
+---
+
+<section class="hero" id="top" data-hero>
+  <Drip band="hero" class="hero__drip" />
+
+  <div class="hero__wreath" data-intro>
+    <Branch side="left" />
+    <Branch side="right" />
+  </div>
+
+  <div class="hero__inner" data-intro data-hero-inner>
+    <h1 class="wordmark">
+      <span class="sr-only">{t.heading}</span>
+      <span class="wordmark__art" aria-hidden="true">
+        <span class="whisk" data-whisk>
+          <svg viewBox="0 0 150 170" focusable="false">
+            <g fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" transform="rotate(33 66 90)">
+              <path d="M66 104C30 80 26 24 66 8c40 16 36 72 0 96Z"></path>
+              <path d="M66 104C43 80 40 26 66 8c26 18 23 72 0 96Z"></path>
+              <path d="M66 104C57 80 56 28 66 8c10 20 9 72 0 96Z"></path>
+            </g>
+            <g transform="rotate(33 66 90)">
+              <rect x="59" y="102" width="14" height="13" rx="3" fill="currentColor"></rect>
+              <rect x="61" y="115" width="10" height="46" rx="5" fill="currentColor"></rect>
+            </g>
+            <path d="M28 150c14 12 40 12 62-12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" transform="translate(32 -8)"></path>
+          </svg>
+          <Heart class="whisk__heart" />
+        </span>
+        {lines.map((word) => (
+          <span class="wordmark__line">
+            {[...word].map((letter) => <span class="ch" data-ch>{letter}</span>)}
+          </span>
+        ))}
+        <span class="wordmark__heart" data-wordheart><Heart /></span>
+      </span>
+    </h1>
+
+    <div class="rule">
+      <span class="rule__line" data-rule-line></span>
+      <span class="rule__heart" data-rule-heart><Heart /></span>
+      <span class="rule__line rule__line--right" data-rule-line></span>
+    </div>
+
+    <p class="hero__tagline" data-hero-fade>{site.tagline}</p>
+    <p class="hero__lead" data-hero-fade>{t.lead}</p>
+
+    <div class="hero__actions" data-hero-fade>
+      <a class="btn" href="#creations">{t.creations}</a>
+      <a class="btn btn--ghost" href={site.phoneHref}>{t.call.replace('{phone}', site.phoneDisplay)}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    --wm: min(22vw, 23svh);
+    position: relative;
+    z-index: 1;
+    display: flex;
+    min-height: 100svh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(188px, 25svh, 250px) var(--gutter) clamp(32px, 6svh, 64px);
+    overflow: clip;
+    background: repeating-linear-gradient(90deg, var(--petal) 0 70px, var(--blush) 70px 140px);
+    text-align: center;
+  }
+
+  /* Bandeau présent dès le premier rendu : seules les coulures s'animent. */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: clamp(66px, 5.5vw, 84px);
+    background: var(--ganache);
+  }
+
+  .hero :global(.hero__drip) {
+    top: 0;
+    z-index: 1;
+  }
+
+  .hero__wreath :global(.branch) {
+    bottom: 1.5svh;
+    width: calc(var(--wm) * 1.42);
+    height: calc(var(--wm) * 3.74);
+  }
+
+  .hero__wreath :global(.branch--left) {
+    right: calc(50% + var(--wm) * 0.95);
+  }
+
+  .hero__wreath :global(.branch--right) {
+    left: calc(50% + var(--wm) * 0.95);
+  }
+
+  .hero__inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    max-width: 100%;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .wordmark {
+    position: relative;
+    font-size: var(--wm);
+    line-height: 0.86;
+    color: var(--cocoa);
+  }
+
+  .wordmark__art {
+    position: relative;
+    display: block;
+  }
+
+  .wordmark__line {
+    display: block;
+    clip-path: inset(-14% -14% -5% -14%);
+    white-space: nowrap;
+  }
+
+  .ch {
+    display: inline-block;
+  }
+
+  .whisk {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    width: 0.42em;
+    margin-bottom: -0.05em;
+    margin-left: -0.21em;
+    color: var(--cocoa);
+  }
+
+  .whisk svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .whisk :global(.whisk__heart) {
+    position: absolute;
+    right: -2%;
+    bottom: 26%;
+    width: 26%;
+  }
+
+  .wordmark__heart {
+    position: absolute;
+    top: 57%;
+    left: calc(50% + 1.08em);
+    display: block;
+    width: 0.22em;
+    line-height: 0;
+    transform-origin: 50% 80%;
+  }
+
+  .wordmark__heart :global(.heart) {
+    width: 100%;
+    transform: rotate(14deg);
+  }
+
+  .rule {
+    display: flex;
+    width: min(calc(var(--wm) * 2.5), 100%);
+    align-items: center;
+    gap: 14px;
+    margin-top: clamp(14px, 2.4svh, 26px);
+  }
+
+  .rule__line {
+    height: 1.5px;
+    flex: 1;
+    background: var(--cocoa);
+    transform-origin: right;
+  }
+
+  .rule__line--right {
+    transform-origin: left;
+  }
+
+  .rule__heart {
+    display: block;
+    width: 20px;
+    line-height: 0;
+  }
+
+  .rule__heart :global(.heart) {
+    width: 100%;
+  }
+
+  .hero__tagline {
+    margin-top: 10px;
+    font-family: var(--font-accent);
+    font-size: clamp(1.25rem, 1rem + 1.2vw, 1.875rem);
+    font-style: italic;
+    line-height: 1.25;
+  }
+
+  .hero__lead {
+    max-width: 30em;
+    margin-top: 8px;
+    color: var(--cocoa-soft);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: clamp(16px, 3svh, 28px);
+  }
+
+  @media (max-width: 720px) {
+    .hero {
+      --wm: min(28.5vw, 21svh);
+      padding-top: clamp(170px, 24svh, 210px);
+    }
+
+    .hero__wreath :global(.branch) {
+      opacity: 0.55;
+    }
+
+    .hero__actions .btn {
+      width: 100%;
+    }
+
+    .hero__actions {
+      width: min(100%, 320px);
+    }
+  }
+</style>

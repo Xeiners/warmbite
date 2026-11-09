@@ -1,0 +1,313 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/logo.png';
+import Arches from './Arches.astro';
+import Heart from './Heart.astro';
+import { menuPages } from '../data/menu';
+import { ui, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang].carte;
+const total = menuPages.length;
+const pageLabel = (n: number) => t.pageLabel.replace('{n}', String(n)).replace('{total}', String(total));
+---
+
+<section class="carte" id="carte" aria-labelledby="carte-title">
+  <Arches class="carte__arches" inner={70} gap={22} rings={5} />
+
+  <div class="container">
+    <header class="carte__head">
+      <p class="eyebrow" data-reveal>{t.eyebrow}</p>
+      <h2 class="section-title" id="carte-title" data-reveal>{t.title}</h2>
+    </header>
+
+    <div class="frame" data-reveal data-menu>
+      <Image
+        class="frame__stamp"
+        data-stamp
+        src={logo}
+        alt=""
+        widths={[120, 220, 320]}
+        sizes="(max-width: 720px) 104px, 150px"
+        format="webp"
+        quality={80}
+      />
+
+      <div class="pages" data-pages>
+        <div class="pages__track" data-pages-track>
+          {menuPages.map((items, pageIndex) => (
+            <ul class="page" data-page aria-label={pageLabel(pageIndex + 1)}>
+              {items.map((item) => (
+                <li class="row" data-row>
+                  <div>
+                    <h3 class="row__name"><Heart class="row__heart" />{item.name[lang]}</h3>
+                    <p class="row__desc">{item.description[lang]}</p>
+                  </div>
+                  <p class="row__price">
+                    {item.price} dt
+                    {item.variant && <small>{item.variant.label[lang]}{lang === 'fr' ? ' :' : ':'} {item.variant.price} dt</small>}
+                  </p>
+                  <span class="row__rule" data-rule></span>
+                </li>
+              ))}
+            </ul>
+          ))}
+        </div>
+      </div>
+
+      <div class="pager">
+        <button class="turn" type="button" data-page-prev aria-label={t.previous} disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"></path></svg>
+        </button>
+        <p class="pager__info">
+          <span class="pager__count" data-page-count aria-live="polite">1 / {total}</span>
+          <span class="pager__hint" aria-hidden="true">{t.hint}</span>
+        </p>
+        <button class="turn" type="button" data-page-next aria-label={t.next}>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7"></path></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .carte {
+    position: relative;
+    z-index: 1;
+    padding-block: clamp(260px, 30vw, 420px) clamp(90px, 11vw, 160px);
+    overflow: clip;
+    background: var(--rose);
+  }
+
+  .carte :global(.carte__arches) {
+    position: absolute;
+    right: -3%;
+    bottom: -8%;
+    width: clamp(190px, 28vw, 420px);
+    color: var(--cocoa);
+  }
+
+  .carte__head {
+    margin-bottom: clamp(66px, 5vw, 76px);
+    text-align: center;
+  }
+
+  .carte__head .eyebrow {
+    margin-bottom: 12px;
+  }
+
+  .frame {
+    --pad: clamp(20px, 5vw, 64px);
+    position: relative;
+    max-width: 920px;
+    margin-inline: auto;
+    padding-block: clamp(68px, 7vw, 92px) clamp(22px, 3vw, 34px);
+    border: 2px solid var(--cocoa);
+    background: var(--rose);
+  }
+
+  .frame :global(.frame__stamp) {
+    position: absolute;
+    top: 0;
+    left: clamp(14px, 5vw, 64px);
+    width: clamp(104px, 11vw, 150px);
+    height: auto;
+    translate: 0 -55%;
+  }
+
+  /* Les pages glissent jusqu'aux bords du cadre. */
+  .pages {
+    overflow-x: clip;
+    touch-action: pan-y;
+    user-select: none;
+  }
+
+  :global(html.js) .pages {
+    cursor: grab;
+  }
+
+  :global(html.js) .pages:global(.is-dragging) {
+    cursor: grabbing;
+  }
+
+  .pages__track {
+    display: flex;
+    will-change: transform;
+  }
+
+  .page {
+    flex: 0 0 100%;
+    min-width: 0;
+    padding-inline: var(--pad);
+  }
+
+  .row {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: clamp(16px, 4vw, 48px);
+    padding-block: clamp(18px, 2.3vw, 26px);
+  }
+
+  .row__rule {
+    position: absolute;
+    inset: auto 0 0;
+    height: 1px;
+    background: rgb(79 38 23 / 0.35);
+    transform-origin: left;
+  }
+
+  .row:last-child .row__rule {
+    display: none;
+  }
+
+  .row__name {
+    display: flex;
+    align-items: center;
+    font-size: clamp(1.5rem, 1.2rem + 1.1vw, 2.125rem);
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+    transition: transform 0.5s var(--ease-out);
+  }
+
+  .row :global(.row__heart) {
+    width: 0;
+    margin-right: 0;
+    color: var(--cherry);
+    opacity: 0;
+    transition: width 0.5s var(--ease-out), margin 0.5s var(--ease-out), opacity 0.3s;
+  }
+
+  @media (hover: hover) {
+    .row:hover :global(.row__heart) {
+      width: 0.72em;
+      margin-right: 0.35em;
+      opacity: 1;
+    }
+  }
+
+  .row__desc {
+    max-width: 34em;
+    margin-top: 4px;
+    color: var(--cocoa-soft);
+  }
+
+  .row__price {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 1.2rem + 1.1vw, 2.125rem);
+    line-height: 1.15;
+    color: var(--cherry);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .row__price small {
+    display: block;
+    margin-top: 6px;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--cocoa);
+  }
+
+  .pager {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+    margin: 14px var(--pad) 0;
+    padding-top: clamp(16px, 2vw, 22px);
+    border-top: 2px solid var(--cocoa);
+  }
+
+  .pager__info {
+    text-align: center;
+  }
+
+  .pager__count {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    line-height: 1.2;
+  }
+
+  .pager__hint {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--cocoa-soft);
+  }
+
+  .turn {
+    display: grid;
+    width: 52px;
+    height: 52px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--cocoa);
+    color: var(--petal);
+    transition: background-color 0.3s, color 0.3s, opacity 0.3s, scale 0.35s var(--ease-out);
+  }
+
+  .turn svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .turn:disabled {
+    opacity: 0.22;
+    cursor: default;
+  }
+
+  @media (hover: hover) {
+    .turn:not(:disabled):hover {
+      background: var(--heart);
+      color: var(--ganache);
+      scale: 1.08;
+    }
+  }
+
+  .turn:not(:disabled):active {
+    scale: 0.94;
+  }
+
+  @media (max-width: 400px) {
+    .row__price small {
+      white-space: normal;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .row {
+      gap: 12px;
+    }
+
+    .row__name,
+    .row__price {
+      font-size: 1.3125rem;
+    }
+  }
+
+  /* Sans JavaScript : simple défilement horizontal des pages. */
+  :global(html:not(.js)) .pages {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  :global(html:not(.js)) .page {
+    scroll-snap-align: start;
+  }
+
+  :global(html:not(.js)) .pager {
+    display: none;
+  }
+</style>

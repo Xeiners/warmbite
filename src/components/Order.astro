@@ -1,0 +1,131 @@
+---
+import Arches from './Arches.astro';
+import { site } from '../data/site';
+import { ui, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const t = ui[Astro.props.lang].order;
+---
+
+<section class="order" id="commander" aria-labelledby="order-title">
+  <Arches class="order__arches" inner={260} gap={40} rings={5} />
+
+  <div class="container order__inner">
+    <p class="eyebrow" data-reveal>{t.eyebrow}</p>
+    <h2 class="section-title" id="order-title" data-reveal>{t.title}</h2>
+    <a class="order__phone" href={site.phoneHref} data-reveal>{site.phoneDisplay}</a>
+
+    <div class="order__actions" data-reveal>
+      <a class="btn btn--rose" href={site.phoneHref}>{t.call}</a>
+      <a class="btn btn--ghost-light" href={site.tiktokUrl} target="_blank" rel="noopener">
+        {t.follow}
+      </a>
+    </div>
+
+    <ol class="steps">
+      {t.steps.map((step, index) => (
+        <li class="step" data-reveal>
+          <span class="step__index" aria-hidden="true">{index + 1}</span>
+          <h3 class="step__title">{step.title}</h3>
+          <p class="step__text">{step.text.replace('{phone}', site.phoneDisplay)}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .order {
+    position: relative;
+    z-index: 2;
+    padding-block: clamp(120px, 15vw, 210px) clamp(56px, 7vw, 96px);
+    overflow: clip;
+    background: var(--ganache);
+    color: var(--petal);
+    text-align: center;
+  }
+
+  .order :global(.order__arches) {
+    position: absolute;
+    top: clamp(28px, 4vw, 60px);
+    left: 50%;
+    width: clamp(620px, 88vw, 1180px);
+    color: var(--cocoa);
+    transform: translateX(-50%);
+    -webkit-mask-image: linear-gradient(#000 50%, transparent 92%);
+    mask-image: linear-gradient(#000 50%, transparent 92%);
+  }
+
+  .order__inner {
+    position: relative;
+  }
+
+  .eyebrow {
+    margin-bottom: 12px;
+    color: var(--on-ganache-muted);
+  }
+
+  .order__phone {
+    display: block;
+    margin-top: 10px;
+    font-family: var(--font-display);
+    font-size: clamp(2.75rem, 12.5vw, 10rem);
+    line-height: 1.05;
+    color: var(--rose);
+    white-space: nowrap;
+    transition: color 0.3s;
+  }
+
+  @media (hover: hover) {
+    .order__phone:hover {
+      color: var(--heart);
+    }
+  }
+
+  .order__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: clamp(20px, 3vw, 34px);
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(20px, 3vw, 44px);
+    max-width: 960px;
+    margin: clamp(60px, 8vw, 110px) auto 0;
+  }
+
+  .step__index {
+    display: inline-grid;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--rose);
+    color: var(--ganache);
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+  }
+
+  .step__title {
+    margin-top: 12px;
+    font-size: clamp(1.375rem, 1.2rem + 0.7vw, 1.75rem);
+  }
+
+  .step__text {
+    margin-top: 4px;
+    color: var(--on-ganache-muted);
+  }
+
+  @media (max-width: 720px) {
+    .steps {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

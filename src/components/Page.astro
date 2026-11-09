@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import Carte from './Carte.astro';
+import Creations from './Creations.astro';
+import Footer from './Footer.astro';
+import Header from './Header.astro';
+import Hero from './Hero.astro';
+import Order from './Order.astro';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<Base lang={lang}>
+  <Header lang={lang} />
+  <main id="contenu">
+    <Hero lang={lang} />
+    <Creations lang={lang} />
+    <Carte lang={lang} />
+    <Order lang={lang} />
+  </main>
+  <Footer lang={lang} />
+</Base>
+
+<script>
+  import '../scripts/main.ts';
+</script>

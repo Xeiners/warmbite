@@ -1,0 +1,28 @@
+{
+  "name": "warmbite",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "videos": "npm install --no-save --no-audit --no-fund ffmpeg-static && node scripts/encode-videos.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/instrument-sans": "^5.3.0",
+    "@fontsource/caprasimo": "^5.3.0",
+    "@fontsource/fraunces": "^5.3.0",
+    "astro": "^7.4.8",
+    "gsap": "^3.15.1",
+    "lenis": "^1.3.27"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "sharp": "^0.35.5",
+    "typescript": "^6.0.3"
+  },
+  "engines": {
+    "node": "26.x"
+  }
+}

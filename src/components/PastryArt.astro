@@ -1,0 +1,116 @@
+---
+import { donutSprinkles, wavyCircle, wavyLayer, type PastryKind } from '../lib/pastry';
+
+interface Props {
+  kind: PastryKind;
+}
+
+const { kind } = Astro.props;
+const sprinkles = donutSprinkles(160, 180);
+const clipId = `cup-${kind}`;
+---
+
+<svg class="pastry" viewBox="0 0 320 340" role="presentation" aria-hidden="true" focusable="false">
+  {kind === 'donut' && (
+    <g>
+      <circle class="line" cx="160" cy="180" r="122" fill="#eebc8a"></circle>
+      <path class="line" d={wavyCircle(160, 180, 103, 7, 9)} fill="#4f2617"></path>
+      <circle cx="160" cy="180" r="46" fill="#eebc8a"></circle>
+      <circle class="line" cx="160" cy="180" r="34" fill="#ffdbe2"></circle>
+      <path d="M86 138A88 88 0 0 1 150 92" fill="none" stroke="#fff5f3" stroke-opacity=".4" stroke-width="10" stroke-linecap="round"></path>
+      {sprinkles.map((s) => (
+        <line x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2} stroke={s.color} stroke-width="6" stroke-linecap="round"></line>
+      ))}
+    </g>
+  )}
+
+  {kind === 'tiramisu' && (
+    <g>
+      <defs>
+        <clipPath id={clipId}>
+          <rect x="72" y="82" width="176" height="226" rx="32"></rect>
+        </clipPath>
+      </defs>
+      <path class="line" d="M84 90C92 52 122 40 160 40s68 12 76 50Z" fill="#3e1c10"></path>
+      <g clip-path={`url(#${clipId})`}>
+        <rect x="60" y="70" width="200" height="250" fill="#4f2617"></rect>
+        <path d={wavyLayer(122, 9, 6)} fill="#fff3e4"></path>
+        <path d={wavyLayer(170, 7, 5)} fill="#c48c5e"></path>
+        <path d={wavyLayer(212, 9, 6)} fill="#fff3e4"></path>
+        <path d={wavyLayer(258, 7, 5)} fill="#b97f52"></path>
+      </g>
+      <rect class="line" x="72" y="82" width="176" height="226" rx="32" fill="none"></rect>
+      <path d="M92 128V262" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="9" stroke-linecap="round"></path>
+      <g fill="#3e1c10">
+        <circle cx="118" cy="26" r="3"></circle>
+        <circle cx="150" cy="14" r="2.500"></circle>
+        <circle cx="186" cy="22" r="3.500"></circle>
+        <circle cx="214" cy="34" r="2.500"></circle>
+      </g>
+    </g>
+  )}
+
+  {kind === 'cake' && (
+    <g>
+      <path class="line" d="M44 198C44 146 74 112 122 110H198C246 112 276 146 276 198V270C276 286 266 296 250 296H70C54 296 44 286 44 270Z" fill="#f3c97c"></path>
+      <g fill="#d9a253">
+        <circle cx="92" cy="244" r="4"></circle>
+        <circle cx="130" cy="268" r="3"></circle>
+        <circle cx="168" cy="238" r="4"></circle>
+        <circle cx="212" cy="264" r="3.500"></circle>
+        <circle cx="240" cy="232" r="3"></circle>
+      </g>
+      <path
+        class="line"
+        d="M58 158C66 118 92 100 124 98H196C228 100 254 118 262 158C264 182 240 186 236 164C232 150 216 150 214 168C212 214 180 214 178 170C176 154 158 154 156 170C154 190 130 190 128 170C126 156 108 156 106 172C104 198 80 198 78 172C74 158 60 174 58 158Z"
+        fill="#fff7ee"
+      ></path>
+      <g>
+        <circle class="line" cx="128" cy="84" r="36" fill="#ffd95e"></circle>
+        <circle cx="128" cy="84" r="27" fill="#fff4bf"></circle>
+        <path d="M128 84V58M128 84L150 72M128 84L150 97M128 84V110M128 84L106 97M128 84L106 72" stroke="#ffd95e" stroke-width="3.500"></path>
+        <circle class="line" cx="192" cy="88" r="28" fill="#ffd95e"></circle>
+        <circle cx="192" cy="88" r="20" fill="#fff4bf"></circle>
+        <path d="M192 88V68M192 88L209 78M192 88L209 98M192 88V108M192 88L175 98M192 88L175 78" stroke="#ffd95e" stroke-width="3"></path>
+      </g>
+      <path class="line" d="M226 66C232 44 254 36 276 42C272 64 250 76 226 66Z" fill="#a8bd7a"></path>
+    </g>
+  )}
+
+  {kind === 'beignet' && (
+    <g>
+      <path class="line" d="M38 208C38 128 102 92 160 92S282 128 282 208C282 268 222 298 160 298S38 268 38 208Z" fill="#eab77f"></path>
+      <path
+        class="line"
+        d="M52 168C70 118 114 92 160 92S250 118 268 168C258 186 242 172 228 186C214 202 196 176 176 190C160 202 144 180 126 192C108 204 96 178 80 186C66 192 58 182 52 168Z"
+        fill="#b9651f"
+      ></path>
+      <path d="M112 118L132 140L122 158M132 140L158 132M196 116L184 142L206 156M184 142L160 150" fill="none" stroke="#e8a35a" stroke-width="3.500" stroke-linecap="round" stroke-linejoin="round"></path>
+      <path d="M84 138C96 120 112 110 130 104" fill="none" stroke="#fff5f3" stroke-opacity=".55" stroke-width="9" stroke-linecap="round"></path>
+      <g fill="#fff3e4">
+        <circle cx="100" cy="240" r="3.500"></circle>
+        <circle cx="140" cy="262" r="3"></circle>
+        <circle cx="186" cy="244" r="3.500"></circle>
+        <circle cx="222" cy="262" r="3"></circle>
+      </g>
+      <circle class="line" cx="282" cy="226" r="23" fill="#fff0cf"></circle>
+      <path class="line" d="M284 248C296 262 298 276 290 284C282 292 270 286 271 274C272 264 276 256 284 248Z" fill="#fff0cf"></path>
+    </g>
+  )}
+</svg>
+
+<style>
+  .pastry {
+    display: block;
+    width: 74%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .line {
+    stroke: var(--ganache);
+    stroke-width: 5;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+</style>

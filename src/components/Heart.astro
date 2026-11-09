@@ -1,0 +1,23 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<svg class:list={['heart', className]} viewBox="0 0 32 28" aria-hidden="true" focusable="false">
+  <path
+    fill="currentColor"
+    d="M16 27.2C6.6 20.4 1 15.2 1 8.9 1 4.3 4.5 1 8.8 1c3 0 5.6 1.6 7.2 4.3C17.6 2.6 20.2 1 23.200 1 27.500 1 31 4.300 31 8.900c0 6.300-5.600 11.500-15 18.300Z"
+  ></path>
+</svg>
+
+<style>
+  .heart {
+    display: inline-block;
+    width: 1em;
+    height: auto;
+    color: var(--heart);
+  }
+</style>
